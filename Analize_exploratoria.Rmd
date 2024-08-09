@@ -149,9 +149,19 @@ fviz_pca_biplot(pca_result,
 1.5. -  Conclusão da análise: 
 
 
+1.5.1. Resumo das Principais Descobertas:
 
+As metas de vendas variam principalmente entre 20.000 e 40.000, com a maioria concentrada em torno de 30.000 a 35.000, conforme observado nos gráficos de distribuição e densidade. Isso indica uma tendência central com pouca variação nas metas estabelecidas para os vendedores.
 
+O boxplot mostra uma distribuição uniforme das metas de vendas, com uma mediana próxima a 30.000 e sem outliers detectados utilizando um fator de 2 para o cálculo do interquartil. Isso sugere que as metas de vendas são estabelecidas de forma consistente e sem valores extremos.
 
+1.5.2. Limitação da análise:
+
+Análise Temporal Limitada: A análise temporal apresentada não detalha as tendências sazonais ou mudanças nas metas de vendas ao longo do tempo, o que poderia ajudar no entendimento de padrões de vendas.
+
+1.5.3. Sugestões para Análises Futuras:
+
+Analisar as metas de vendas segmentadas por produto, região ou equipe para identificar variações e oportunidades de otimização nas estratégias de vendas.
 
 
 
