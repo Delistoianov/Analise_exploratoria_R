@@ -1,0 +1,159 @@
+---
+title: "Analise exploratoria"
+author: "João Lucas"
+date: "2024-08-05"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+# Análise exploratório de dados 
+
+```{r} {r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(corrplot)
+library(factoextra)
+```
+
+## Carregamento e Preparação dos Dados:
+
+### 1. Tabela targets_salesperson_final:
+
+```{r}
+targets_salesperson_final = read.csv("C:/Users/Inteli/Documents/GitHub/Analise_exploratoria_R/Dados/targets_salesperson_final.csv")
+head(targets_salesperson_final, 5)
+```
+
+```{r}
+str(targets_salesperson_final)
+```
+
+```{r}
+summary(targets_salesperson_final)
+```
+
+1.1. Descrição das colunas:
+
+```{r}
+names(targets_salesperson_final)
+```
+
+1.1.1 - id_employee: identificador do funcionário.
+1.1.2 - sales_target: representam metas mensais de vendas de cada funcionário.
+1.1.3 - month: mês e o ano correspondentes a cada meta de vendas de cada funcionário.
+
+1.2 Análise Univariada: 
+
+```{r}
+sales_target_col <- "sales_target"
+
+ggplot(targets_salesperson_final, aes(x = .data[[sales_target_col]])) +
+  geom_histogram(binwidth = 1000, fill = "blue", color = "black", alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Distribuição das Metas de Vendas", x = "Metas de Vendas", y = "Frequência")
+
+ggplot(targets_salesperson_final, aes(x = .data[[sales_target_col]])) +
+  geom_density(fill = "blue", alpha = 0.5) +
+  theme_minimal() +
+  labs(title = "Densidade das Metas de Vendas", x = "Metas de Vendas", y = "Densidade")
+
+ggplot(targets_salesperson_final, aes(y = .data[[sales_target_col]])) +
+  geom_boxplot(fill = "blue", alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Boxplot das Metas de Vendas", y = "Metas de Vendas")
+
+identify_outliers <- function(data, variable, factor = 1.5) {
+  Q1 <- quantile(data[[variable]], 0.25, na.rm = TRUE)
+  Q3 <- quantile(data[[variable]], 0.75, na.rm = TRUE)
+  IQR <- Q3 - Q1
+  lower_bound <- Q1 - factor * IQR
+  upper_bound <- Q3 + factor * IQR
+  outliers <- data %>% filter(data[[variable]] < lower_bound | data[[variable]] > upper_bound)
+  return(outliers)
+}
+
+outliers_sales_target <- identify_outliers(targets_salesperson_final, "sales_target", 2)
+
+print("Outliers nas Metas de Vendas com fator 2:")
+print(outliers_sales_target)
+
+```
+
+Outliers: Com o calculo do interquartil não foi encontrado nenhum outliers.
+
+
+1.3. - Análise Bivariada: 
+
+```{r}
+ggplot(targets_salesperson_final, aes(x = month, y = sales_target, color = factor(id_employee))) +
+  geom_point(alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Relação entre Metas de Vendas e Mês",
+       x = "Mês",
+       y = "Metas de Vendas",
+       color = "ID do Funcionário")
+
+ggplot(targets_salesperson_final, aes(x = month, y = sales_target, fill = factor(id_employee))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_minimal() +
+  labs(title = "Distribuição das Metas de Vendas por Mês",
+       x = "Mês",
+       y = "Metas de Vendas",
+       fill = "ID do Funcionário")
+
+correlation_matrix <- cor(targets_salesperson_final %>% select(sales_target))
+
+library(corrplot)
+
+
+numeric_vars <- targets_salesperson_final %>%
+  select(where(is.numeric))
+
+correlation_matrix <- cor(numeric_vars, use = "complete.obs")
+
+corrplot(correlation_matrix, method = "circle", type = "upper", tl.cex = 0.8, title = "Matriz de Correlação")
+```
+
+1.4. - Análise Multivariada:
+
+```{r}
+numeric_vars <- targets_salesperson_final %>%
+  select(where(is.numeric))
+
+scaled_data <- scale(numeric_vars)
+
+pca_result <- prcomp(scaled_data, center = TRUE, scale. = TRUE)
+
+fviz_pca_biplot(pca_result, 
+                geom.ind = "point", 
+                pointshape = 21, 
+                pointsize = 2.5,
+                fill.ind = targets_salesperson_final$id_employee, 
+                col.ind = "black", 
+                palette = "jco",
+                addEllipses = TRUE,
+                label = "var",
+                col.var = "blue",
+                repel = TRUE,
+                title = "Biplot da Análise de Componentes Principais (PCA)"
+)
+```
+
+1.5. -  Conclusão da análise: 
+
+
+
+
+
+
+
+
+
+
